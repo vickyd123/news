@@ -1,0 +1,19 @@
+{
+  "name": "news-summary",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_NO_WARNINGS=1 node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "newsapi": "^2.4.1",
+    "pg": "^8.15.6"
+  }
+}

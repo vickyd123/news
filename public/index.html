@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Daily News Summary</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #121212;
+      color: #E5E5E5;
+    }
+    h1 {
+      color: #1DB954;
+    }
+    button {
+      background-color: #1DB954;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #17A24C;
+    }
+    .news-item {
+      position: relative; /* Needed for absolute positioning of date */
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #333;
+      border-radius: 5px;
+      background-color: #1E1E1E;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      min-height: 120px;
+    }
+    .posted-date {
+      position: absolute;
+      right: 15px;
+      bottom: 10px;
+      font-size: 0.9em;
+      color: #888;
+    }
+    a {
+      color: #1DB954;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Daily News Summary</h1>
+  <button onclick="fetchNews()">Fetch Latest News</button>
+  <div id="news-container"></div>
+
+  <script>
+    function formatDate(isoString) {
+      if (!isoString) return '';
+      const date = new Date(isoString);
+      return date.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function loadNews() {
+      fetch('/get-news')
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById('news-container');
+          container.innerHTML = '';
+          data.forEach(item => {
+            container.innerHTML += `
+              <div class="news-item">
+                <h3>${item.title}</h3>
+                ${item.description ? `<p>${item.description}</p>` : ''}
+                <a href="${item.url}" target="_blank">Read more</a>
+                ${item.published_at ? `<span class="posted-date">${formatDate(item.published_at)}</span>` : ''}
+              </div>
+            `;
+          });
+        });
+    }
+    function fetchNews() {
+      fetch('/fetch-news').then(() => loadNews());
+    }
+    window.onload = loadNews;
+  </script>
+</body>
+</html>
