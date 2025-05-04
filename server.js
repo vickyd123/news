@@ -23,7 +23,8 @@ app.use(express.static('public'));
       title TEXT,
       description TEXT,
       url TEXT UNIQUE,
-      published_at TIMESTAMP
+      published_at TIMESTAMP,
+      publisher TEXT
     );
   `);
 })();
@@ -45,10 +46,10 @@ app.get('/fetch-news', async (req, res) => {
         if (!seenUrls.has(article.url)) {
           seenUrls.add(article.url);
           await pool.query(
-            `INSERT INTO news (title, description, url, published_at)
-             VALUES ($1, $2, $3, $4)
+            `INSERT INTO news (title, description, url, published_at, publisher)
+             VALUES ($1, $2, $3, $4, $5)
              ON CONFLICT (url) DO NOTHING`,
-            [article.title, article.description, article.url, article.publishedAt]
+            [article.title, article.description, article.url, article.publishedAt, article.source.name]
           );
         }
       }

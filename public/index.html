@@ -80,15 +80,17 @@
           const container = document.getElementById('news-container');
           container.innerHTML = '';
           data.forEach(item => {
-            container.innerHTML += `
-              <div class="news-item">
-                <h3>${item.title}</h3>
-                ${item.description ? `<p>${item.description}</p>` : ''}
-                <a href="${item.url}" target="_blank">Read more</a>
-                ${item.published_at ? `<span class="posted-date">${formatDate(item.published_at)}</span>` : ''}
-              </div>
-            `;
-          });
+  container.innerHTML += `
+    <div class="news-item">
+      <h3>${item.title}</h3>
+      ${item.publisher ? `<div style="font-size:0.95em;color:#1DB954;font-weight:bold;">${item.publisher}</div>` : ''}
+      ${item.description ? `<p>${item.description}</p>` : ''}
+      <a href="${item.url}" target="_blank">Read more</a>
+      ${item.published_at ? `<span class="posted-date">${formatDate(item.published_at)}</span>` : ''}
+    </div>
+  `;
+});
+
         });
     }
     function fetchNews() {
