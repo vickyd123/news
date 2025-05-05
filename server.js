@@ -32,12 +32,17 @@ app.use(express.static('public'));
 // Fetch and store news with duplicate prevention
 app.get('/fetch-news', async (req, res) => {
   try {
+    // Step 1: Delete all existing news
+    await pool.query('DELETE FROM news');
+
+    // Step 2: Fetch new articles
     const response = await newsapi.v2.everything({
       q: 'computer science OR AI OR artificial intelligence OR machine learning OR deep learning OR algorithms OR data structures',
       language: 'en',
       sortBy: 'publishedAt'
     });
 
+    // Step 3: Insert new articles
     for (const article of response.articles) {
       await pool.query(
         `INSERT INTO news (title, description, url, published_at, publisher)
@@ -46,12 +51,13 @@ app.get('/fetch-news', async (req, res) => {
         [article.title, article.description, article.url, article.publishedAt, article.source.name]
       );
     }
-    res.send('Computer science news fetched and stored.');
+    res.send('Fetched and replaced with the latest computer science news!');
   } catch (err) {
     console.error(err);
     res.status(500).send('Error fetching news');
   }
 });
+
 
 
 // Serve news to frontend
