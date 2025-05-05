@@ -32,35 +32,27 @@ app.use(express.static('public'));
 // Fetch and store news with duplicate prevention
 app.get('/fetch-news', async (req, res) => {
   try {
-    const categories = ['business', 'technology', 'science'];
-    const seenUrls = new Set();  // <-- Added URL tracking
+    const response = await newsapi.v2.everything({
+      q: 'computer science OR AI OR artificial intelligence OR machine learning OR deep learning OR algorithms OR data structures',
+      language: 'en',
+      sortBy: 'publishedAt'
+    });
 
-    for (const category of categories) {
-      const response = await newsapi.v2.topHeadlines({
-        country: 'us',
-        language: 'en',
-        category: category
-      });
-
-      for (const article of response.articles) {
-        if (!seenUrls.has(article.url)) {
-          seenUrls.add(article.url);
-          await pool.query(
-            `INSERT INTO news (title, description, url, published_at, publisher)
-             VALUES ($1, $2, $3, $4, $5)
-             ON CONFLICT (url) DO NOTHING`,
-            [article.title, article.description, article.url, article.publishedAt, article.source.name]
-          );
-        }
-      }
+    for (const article of response.articles) {
+      await pool.query(
+        `INSERT INTO news (title, description, url, published_at, publisher)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (url) DO NOTHING`,
+        [article.title, article.description, article.url, article.publishedAt, article.source.name]
+      );
     }
-    
-    res.send('Filtered news stored without duplicates');
+    res.send('Computer science news fetched and stored.');
   } catch (err) {
     console.error(err);
     res.status(500).send('Error fetching news');
   }
 });
+
 
 // Serve news to frontend
 app.get('/get-news', async (req, res) => {
